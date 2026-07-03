@@ -47,7 +47,7 @@ export default function App() {
   }
 
   if (!session) {
-    return <AuthScreen onAuthed={() => {}} />;
+    return <AuthScreen />;
   }
 
   if (!profile) {

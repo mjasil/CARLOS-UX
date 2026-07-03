@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
-import { Shield, Users, FileText, BarChart3, LogOut } from "lucide-react";
+import { Shield, Users, FileText, BarChart3, LogOut, UserPlus } from "lucide-react";
 import { supabase } from "./supabaseClient";
 
 export default function AdminPanel({ onClose, onSignOut }) {
-  const [tab, setTab] = useState("users"); // users | content | stats
+  const [tab, setTab] = useState("users"); // users | create | content | stats
   const [users, setUsers] = useState([]);
   const [content, setContent] = useState([]);
   const [stats, setStats] = useState({ total: 0, small: 0, big: 0 });
   const [loading, setLoading] = useState(true);
+
+  const [newUsername, setNewUsername] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [createMsg, setCreateMsg] = useState("");
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     loadAll();
@@ -39,6 +44,30 @@ export default function AdminPanel({ onClose, onSignOut }) {
     loadAll();
   }
 
+  async function createUser(e) {
+    e.preventDefault();
+    setCreateMsg("");
+    if (!newUsername.trim() || newPassword.length < 6) {
+      setCreateMsg("Username required, password needs 6+ characters.");
+      return;
+    }
+    setCreating(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data, error } = await supabase.functions.invoke("create-user", {
+      body: { username: newUsername.trim(), password: newPassword },
+      headers: { Authorization: `Bearer ${session?.access_token}` },
+    });
+    setCreating(false);
+    if (error || data?.error) {
+      setCreateMsg(data?.error || error.message || "Failed to create account.");
+    } else {
+      setCreateMsg(`Account "${newUsername}" created.`);
+      setNewUsername("");
+      setNewPassword("");
+      loadAll();
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black z-[60] font-mono overflow-y-auto">
       <div className="max-w-md mx-auto p-5">
@@ -60,6 +89,7 @@ export default function AdminPanel({ onClose, onSignOut }) {
         <div className="flex gap-2 mb-6">
           {[
             { id: "users", label: "Users", icon: Users },
+            { id: "create", label: "Create", icon: UserPlus },
             { id: "content", label: "Content", icon: FileText },
             { id: "stats", label: "Stats", icon: BarChart3 },
           ].map(({ id, label, icon: Icon }) => (
@@ -99,6 +129,41 @@ export default function AdminPanel({ onClose, onSignOut }) {
                   </div>
                 ))}
               </div>
+            )}
+
+            {tab === "create" && (
+              <form onSubmit={createUser} className="space-y-3">
+                <div>
+                  <label className="text-white/40 text-[10px] uppercase tracking-wide">Username</label>
+                  <input
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    autoCapitalize="none"
+                    placeholder="new_user"
+                    className="w-full bg-white/5 border border-white/15 rounded-lg px-3 py-2 text-white text-sm mt-1 outline-none focus:border-[#ff3b3b]/60"
+                  />
+                </div>
+                <div>
+                  <label className="text-white/40 text-[10px] uppercase tracking-wide">Password</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="At least 6 characters"
+                    className="w-full bg-white/5 border border-white/15 rounded-lg px-3 py-2 text-white text-sm mt-1 outline-none focus:border-[#ff3b3b]/60"
+                  />
+                </div>
+                {createMsg && <p className="text-[#ff8a8a] text-xs">{createMsg}</p>}
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="w-full flex items-center justify-center gap-2 text-white font-semibold text-sm py-2.5 rounded-lg disabled:opacity-50"
+                  style={{ background: "linear-gradient(90deg, #ff3b3b, #a80000)" }}
+                >
+                  <UserPlus size={15} />
+                  {creating ? "Creating..." : "Create account"}
+                </button>
+              </form>
             )}
 
             {tab === "content" && (

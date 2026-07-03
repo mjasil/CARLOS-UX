@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { LogIn, UserPlus } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { supabase } from "./supabaseClient";
 
-export default function AuthScreen({ onAuthed }) {
-  const [mode, setMode] = useState("login"); // "login" | "signup"
+export default function AuthScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,23 +20,11 @@ export default function AuthScreen({ onAuthed }) {
       return;
     }
     setLoading(true);
-
-    if (mode === "signup") {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: emailFor(username),
-        password,
-        options: { data: { username: username.trim() } },
-      });
-      if (signUpError) setError(signUpError.message);
-      else onAuthed();
-    } else {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: emailFor(username),
-        password,
-      });
-      if (signInError) setError("Invalid username or password.");
-      else onAuthed();
-    }
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: emailFor(username),
+      password,
+    });
+    if (signInError) setError("Invalid username or password.");
     setLoading(false);
   };
 
@@ -50,10 +37,11 @@ export default function AuthScreen({ onAuthed }) {
           border: "2px solid #ff3b3b",
         }}
       >
-        <h1 className="text-white text-xl font-bold text-center mb-1">
-          {mode === "login" ? "Sign In" : "Create Account"}
-        </h1>
+        <h1 className="text-white text-xl font-bold text-center mb-1">Sign In</h1>
         <p className="text-white/40 text-xs text-center mb-6">Carlos UX</p>
+        <p className="text-white/30 text-[11px] text-center mb-5">
+          Accounts are created by an admin. Don't have one? Ask your admin.
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
@@ -80,18 +68,12 @@ export default function AuthScreen({ onAuthed }) {
             className="w-full flex items-center justify-center gap-2 text-white font-bold text-sm py-2.5 rounded-lg disabled:opacity-50"
             style={{ background: "linear-gradient(90deg, #ff3b3b, #a80000)" }}
           >
-            {mode === "login" ? <LogIn size={15} /> : <UserPlus size={15} />}
-            {loading ? "Please wait..." : mode === "login" ? "Sign In" : "Create Account"}
+            <LogIn size={15} />
+            {loading ? "Please wait..." : "Sign In"}
           </button>
         </form>
-
-        <button
-          onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); }}
-          className="w-full text-center text-white/40 text-xs mt-4 underline"
-        >
-          {mode === "login" ? "Need an account? Sign up" : "Already have an account? Sign in"}
-        </button>
       </div>
     </div>
   );
 }
+
