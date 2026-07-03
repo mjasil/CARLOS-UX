@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Zap, X, Clock, Globe } from "lucide-react";
-import { Browser } from "@capacitor/browser";
+import { Zap, X, Clock, Globe, ArrowLeft } from "lucide-react";
 import logoCircle from "./logo-circle.png";
 
 function useSounds() {
@@ -144,6 +143,7 @@ export default function SmallBigReveal() {
   const [history, setHistory] = useState([]); // last few results, newest first
   const [burstKey, setBurstKey] = useState(0);
   const [urlInput, setUrlInput] = useState("");
+  const [viewingUrl, setViewingUrl] = useState(null);
   const cycleIndexRef = useRef(-1);
   const { playClick, playRoll, playReveal, playClose, playLogo } = useSounds();
 
@@ -183,16 +183,17 @@ export default function SmallBigReveal() {
   };
   const closePopup = () => { playClose(); setOpen(false); };
 
-  const openUrl = async () => {
+  const openUrl = () => {
     let url = urlInput.trim();
     if (!url) return;
     if (!/^https?:\/\//i.test(url)) url = "https://" + url;
     playClick();
-    try {
-      await Browser.open({ url });
-    } catch (e) {
-      console.error("Failed to open browser:", e);
-    }
+    setViewingUrl(url);
+  };
+
+  const closeWebsite = () => {
+    playClose();
+    setViewingUrl(null);
   };
 
   const generate = () => {
@@ -286,6 +287,37 @@ export default function SmallBigReveal() {
           </div>
         </div>
       </div>
+
+      {/* Embedded website view — stays inside the app's own screen */}
+      {viewingUrl && (
+        <div className="fixed inset-0 bg-black z-40 flex flex-col">
+          <div className="flex items-center gap-3 px-3 py-3 bg-[#0a0202] border-b border-[#ff3b3b]/30">
+            <button onClick={closeWebsite} className="text-white/70 hover:text-white p-1">
+              <ArrowLeft size={20} />
+            </button>
+            <p className="text-white/50 text-xs truncate flex-1 font-mono">{viewingUrl}</p>
+          </div>
+          <iframe
+            src={viewingUrl}
+            title="In-app website"
+            className="flex-1 w-full border-0 bg-white"
+            sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
+          />
+
+          {/* Floating button to bring up the Carlos popup on top of the website */}
+          <button
+            onClick={openPopup}
+            className="absolute bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center z-10"
+            style={{
+              background: "linear-gradient(135deg, #ff3b3b, #a80000)",
+              boxShadow: "0 4px 20px rgba(255,59,59,0.6)",
+              animation: "boxPulse 2.2s ease-in-out infinite",
+            }}
+          >
+            <Zap size={22} className="text-white" strokeWidth={2.5} />
+          </button>
+        </div>
+      )}
 
       {open && (
         <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-5 z-50" onClick={closePopup}>
