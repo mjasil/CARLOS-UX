@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Shield, Users, FileText, BarChart3, LogOut, UserPlus } from "lucide-react";
 import { supabase } from "./supabaseClient";
 
-export default function AdminPanel({ onClose, onSignOut }) {
+export default function AdminPanel({ onClose, onSignOut, standalone }) {
   const [tab, setTab] = useState("users"); // users | create | content | stats
   const [users, setUsers] = useState([]);
   const [content, setContent] = useState([]);
@@ -80,9 +80,11 @@ export default function AdminPanel({ onClose, onSignOut }) {
             <button onClick={onSignOut} className="text-white/50 hover:text-white p-2" title="Sign out">
               <LogOut size={18} />
             </button>
-            <button onClick={onClose} className="text-white/50 hover:text-white text-sm px-3 py-1 border border-white/20 rounded-md">
-              Close
-            </button>
+            {!standalone && (
+              <button onClick={onClose} className="text-white/50 hover:text-white text-sm px-3 py-1 border border-white/20 rounded-md">
+                Close
+              </button>
+            )}
           </div>
         </div>
 

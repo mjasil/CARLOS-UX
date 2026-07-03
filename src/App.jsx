@@ -4,6 +4,8 @@ import AuthScreen from "./AuthScreen";
 import MainApp from "./MainApp";
 import AdminPanel from "./AdminPanel";
 
+const isAdminRoute = new URLSearchParams(window.location.search).get("admin") === "true";
+
 export default function App() {
   const [session, setSession] = useState(undefined); // undefined = loading, null = signed out
   const [profile, setProfile] = useState(null);
@@ -58,6 +60,26 @@ export default function App() {
     );
   }
 
+  // Dedicated admin website — visiting the URL with ?admin=true goes straight
+  // to the admin console after login, instead of the small/big game.
+  if (isAdminRoute) {
+    if (profile.role !== "admin") {
+      return (
+        <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 font-mono text-center">
+          <p className="text-[#ff3b3b] text-sm font-bold mb-2">Not authorized</p>
+          <p className="text-white/40 text-xs mb-6">This account doesn't have admin access.</p>
+          <button
+            onClick={handleLogout}
+            className="text-white/50 text-xs underline"
+          >
+            Sign out
+          </button>
+        </div>
+      );
+    }
+    return <AdminPanel onClose={handleLogout} onSignOut={handleLogout} standalone />;
+  }
+
   return (
     <>
       <MainApp profile={profile} onLogout={handleLogout} onOpenAdmin={() => setShowAdmin(true)} />
@@ -67,3 +89,4 @@ export default function App() {
     </>
   );
 }
+
