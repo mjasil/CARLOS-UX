@@ -1,43 +1,43 @@
 # Carlos UX
 
-React component demos — in-app popups, sound-driven UI, and a small/big random
-generator with a real-time wall-clock cycle. Built for Flovex.
+A small/big random generator app, built for Flovex — packaged as an
+installable Android app using Capacitor.
 
-## Structure
+## 📱 Get the APK (no computer needed)
+
+1. Go to the **Actions** tab on this repo
+2. Click the latest **"Build Android APK"** run (or **Run workflow** to trigger a new one)
+3. Wait for it to finish (green check ✅)
+4. Scroll down to **Artifacts** → download `carlos-ux-debug-apk`
+5. Unzip it on your phone, tap `app-debug.apk` to install
+   (you may need to allow "install unknown apps" for your browser/files app)
+
+Every push to `main`/`master` automatically triggers a new build.
+
+## Project structure
 
 ```
-src/
-  popup-demo.jsx          Basic in-app popup (button opens a modal)
-  popup-demo-full.jsx     Popup with particles, glow, synthesized sound
-  coin-toss.jsx           Standalone heads/tails game
-  start-popup-toss.jsx    Coin toss embedded inside a popup
-  cyber-toss.jsx          Cyberpunk-styled heads/tails popup
-  small-big-call.jsx      Small/Big pick-a-side game
-  small-big-reveal.jsx    Small/Big random reveal, round-based, 1-min cooldown
-  small-big-square.jsx    Latest version — square popup, live wall-clock timer,
-                           Carlos branding, logo animation, sparkle burst,
-                           result history dots
-assets/
-  logo-circle.png         Circular cropped logo used in the popup header
+src/App.jsx            The live app (small/big generator, live wall-clock
+                        timer, Carlos branding, sounds, animations)
+src/logo-circle.png     Circular logo used in the popup
+android/                Native Android project (Capacitor)
+.github/workflows/      CI workflow that builds the APK in the cloud
+demos/                  Earlier standalone component demos (reference only)
+```
+
+## Local development (optional, if you ever use a computer)
+
+```bash
+npm install
+npm run dev          # preview in browser
+npm run build        # build web assets
+npx cap sync android # sync into the native project
 ```
 
 ## Notes
 
-- All sound effects are synthesized in-browser via the Web Audio API — no
-  external audio files needed.
-- `small-big-square.jsx` expects `logo-circle.png` to be importable from your
-  app's own asset pipeline, e.g.:
-
-  ```jsx
-  import logo from "../assets/logo-circle.png";
-  // then use <img src={logo} ... />
-  ```
-
-- These are random-outcome demos for entertainment only — not tied to any
+- All sound effects are synthesized in-browser via the Web Audio API.
+- This is a random-outcome demo for entertainment only — not tied to any
   real-money prediction or betting mechanic.
-
-## Requirements
-
-- React 18+
-- `lucide-react` for icons
-- Tailwind CSS (utility classes used throughout)
+- The debug APK is unsigned/for testing. For a Play Store release build,
+  you'd generate a signing key and switch the workflow to `assembleRelease`.

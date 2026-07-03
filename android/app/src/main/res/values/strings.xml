@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Carlos UX</string>
+    <string name="title_activity_main">Carlos UX</string>
+    <string name="package_name">com.byflovex.carlosux</string>
+    <string name="custom_url_scheme">com.byflovex.carlosux</string>
+</resources>
