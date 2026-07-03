@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Zap, X, Clock } from "lucide-react";
+import { Zap, X, Clock, Globe } from "lucide-react";
+import { Browser } from "@capacitor/browser";
 import logoCircle from "./logo-circle.png";
 
 function useSounds() {
@@ -142,6 +143,7 @@ export default function SmallBigReveal() {
   const [waitFlash, setWaitFlash] = useState(false);
   const [history, setHistory] = useState([]); // last few results, newest first
   const [burstKey, setBurstKey] = useState(0);
+  const [urlInput, setUrlInput] = useState("");
   const cycleIndexRef = useRef(-1);
   const { playClick, playRoll, playReveal, playClose, playLogo } = useSounds();
 
@@ -180,6 +182,18 @@ export default function SmallBigReveal() {
     setTimeout(() => playLogo(), 250);
   };
   const closePopup = () => { playClose(); setOpen(false); };
+
+  const openUrl = async () => {
+    let url = urlInput.trim();
+    if (!url) return;
+    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+    playClick();
+    try {
+      await Browser.open({ url });
+    } catch (e) {
+      console.error("Failed to open browser:", e);
+    }
+  };
 
   const generate = () => {
     if (rolling) return;
@@ -248,6 +262,29 @@ export default function SmallBigReveal() {
           <Zap size={18} strokeWidth={2.5} className="text-[#ff3b3b]" />
           START
         </button>
+
+        {/* In-app browser — opens any URL inside the app's own window */}
+        <div className="mt-8 pt-6 border-t border-white/10">
+          <p className="text-white/40 text-xs tracking-widest uppercase mb-3 flex items-center gap-2">
+            <Globe size={13} /> Open a website in-app
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              placeholder="example.com"
+              className="flex-1 bg-white/5 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder-white/30 outline-none focus:border-[#ff3b3b]/60"
+            />
+            <button
+              onClick={openUrl}
+              className="px-4 rounded-lg text-white text-sm font-semibold active:scale-95 transition-transform"
+              style={{ background: "linear-gradient(90deg, #ff3b3b, #a80000)" }}
+            >
+              Open
+            </button>
+          </div>
+        </div>
       </div>
 
       {open && (
