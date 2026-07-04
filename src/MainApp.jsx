@@ -148,6 +148,8 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
   const [appTitle, setAppTitle] = useState("Carlos");
   const [tagline, setTagline] = useState("Opens a random small/big generator — one per minute");
   const [footerNote, setFooterNote] = useState("Random generator · for fun only");
+  const [popupPos, setPopupPos] = useState({ x: null, y: null }); // null = default centered
+  const dragState = useRef({ dragging: false, startX: 0, startY: 0, origX: 0, origY: 0 });
   const cycleIndexRef = useRef(-1);
   const { playClick, playRoll, playReveal, playClose, playLogo } = useSounds();
 
@@ -201,6 +203,31 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
     setTimeout(() => playLogo(), 250);
   };
   const closePopup = () => { playClose(); setOpen(false); };
+
+  const handleDragStart = (clientX, clientY) => {
+    dragState.current = {
+      dragging: true,
+      startX: clientX,
+      startY: clientY,
+      origX: popupPos.x ?? window.innerWidth / 2 - 160,
+      origY: popupPos.y ?? window.innerHeight / 2 - 200,
+    };
+  };
+  const handleDragMove = (clientX, clientY) => {
+    if (!dragState.current.dragging) return;
+    const dx = clientX - dragState.current.startX;
+    const dy = clientY - dragState.current.startY;
+    setPopupPos({ x: dragState.current.origX + dx, y: dragState.current.origY + dy });
+  };
+  const handleDragEnd = () => { dragState.current.dragging = false; };
+
+  const onHeaderPointerDown = (e) => {
+    e.preventDefault();
+    handleDragStart(e.clientX ?? e.touches?.[0]?.clientX, e.clientY ?? e.touches?.[0]?.clientY);
+  };
+  const onHeaderPointerMove = (e) => {
+    handleDragMove(e.clientX ?? e.touches?.[0]?.clientX, e.clientY ?? e.touches?.[0]?.clientY);
+  };
 
   const openUrl = () => {
     if (!fixedLink) return;
@@ -354,17 +381,41 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
       )}
 
       {open && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-5 z-50" onClick={closePopup}>
+        <div
+          className="fixed z-50"
+          style={{
+            left: popupPos.x ?? "50%",
+            top: popupPos.y ?? "50%",
+            transform: popupPos.x === null ? "translate(-50%, -50%)" : "none",
+            pointerEvents: "none", // let touches outside the card pass through to the page underneath
+          }}
+          onPointerMove={onHeaderPointerMove}
+          onPointerUp={handleDragEnd}
+          onPointerCancel={handleDragEnd}
+          onTouchMove={(e) => onHeaderPointerMove(e)}
+          onTouchEnd={handleDragEnd}
+        >
           <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-[320px] rounded-xl overflow-hidden"
+            className="relative w-[300px] rounded-xl overflow-hidden"
             style={{
               background: "radial-gradient(circle at 50% 20%, #1a0505, #0a0202 75%)",
               border: "2px solid #ff3b3b",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.7)",
               animation: "popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards, boxPulse 2.2s ease-in-out infinite",
-              padding: "28px 22px 24px",
+              padding: "0 22px 24px",
+              pointerEvents: "auto", // the card itself still receives touches
             }}
           >
+            {/* Drag handle header */}
+            <div
+              onPointerDown={onHeaderPointerDown}
+              onTouchStart={(e) => onHeaderPointerDown(e)}
+              className="flex items-center justify-center py-2 cursor-move touch-none"
+              style={{ marginLeft: -22, marginRight: -22, marginBottom: 6 }}
+            >
+              <div className="w-10 h-1 rounded-full bg-[#ff3b3b]/40" />
+            </div>
+
             {/* corner brackets */}
             {[
               { top: -1, left: -1, borderWidth: "3px 0 0 3px" },
