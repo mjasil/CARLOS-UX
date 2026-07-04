@@ -9,6 +9,7 @@ const isAdminRoute = new URLSearchParams(window.location.search).get("admin") ==
 export default function App() {
   const [session, setSession] = useState(undefined); // undefined = loading, null = signed out
   const [profile, setProfile] = useState(null);
+  const [profileError, setProfileError] = useState(null);
   const [showAdmin, setShowAdmin] = useState(false);
 
   useEffect(() => {
@@ -30,7 +31,10 @@ export default function App() {
       .eq("id", session.user.id)
       .single()
       .then(({ data, error }) => {
-        if (error) console.error("Failed to load profile:", error);
+        if (error) {
+          console.error("Failed to load profile:", error);
+          setProfileError(error.message);
+        }
         setProfile(data ?? null);
       });
   }, [session?.user?.id]);
@@ -54,8 +58,18 @@ export default function App() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <p className="text-white/40 text-sm font-mono">Setting up your account...</p>
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 font-mono text-center">
+        <p className="text-white/40 text-sm mb-3">
+          {profileError ? "Something went wrong" : "Setting up your account..."}
+        </p>
+        {profileError && (
+          <>
+            <p className="text-[#ff3b3b] text-xs mb-4 max-w-xs">{profileError}</p>
+            <button onClick={handleLogout} className="text-white/50 text-xs underline">
+              Sign out and try again
+            </button>
+          </>
+        )}
       </div>
     );
   }
