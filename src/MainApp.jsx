@@ -143,10 +143,20 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
   const [waitFlash, setWaitFlash] = useState(false);
   const [history, setHistory] = useState([]); // last few results, newest first
   const [burstKey, setBurstKey] = useState(0);
-  const [urlInput, setUrlInput] = useState("");
   const [viewingUrl, setViewingUrl] = useState(null);
+  const [fixedLink, setFixedLink] = useState(null);
   const cycleIndexRef = useRef(-1);
   const { playClick, playRoll, playReveal, playClose, playLogo } = useSounds();
+
+  // Fetch the admin-set fixed website link
+  useEffect(() => {
+    supabase
+      .from("app_content")
+      .select("value")
+      .eq("key", "fixed_link")
+      .maybeSingle()
+      .then(({ data }) => setFixedLink(data?.value || null));
+  }, []);
 
   // Locked to the real wall clock: the cycle boundary is always the top of
   // the current minute (e.g. 5:14:30 -> 30s left until 5:15:00), not a
@@ -185,8 +195,8 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
   const closePopup = () => { playClose(); setOpen(false); };
 
   const openUrl = () => {
-    let url = urlInput.trim();
-    if (!url) return;
+    if (!fixedLink) return;
+    let url = fixedLink.trim();
     if (!/^https?:\/\//i.test(url)) url = "https://" + url;
     playClick();
     setViewingUrl(url);
@@ -287,28 +297,21 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
           START
         </button>
 
-        {/* In-app browser — opens any URL inside the app's own window */}
-        <div className="mt-8 pt-6 border-t border-white/10">
-          <p className="text-white/40 text-xs tracking-widest uppercase mb-3 flex items-center gap-2">
-            <Globe size={13} /> Open a website in-app
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="example.com"
-              className="flex-1 bg-white/5 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder-white/30 outline-none focus:border-[#ff3b3b]/60"
-            />
+        {/* In-app browser — opens the admin-set link inside the app's own window */}
+        {fixedLink && (
+          <div className="mt-8 pt-6 border-t border-white/10">
+            <p className="text-white/40 text-xs tracking-widest uppercase mb-3 flex items-center gap-2">
+              <Globe size={13} /> Website
+            </p>
             <button
               onClick={openUrl}
-              className="px-4 rounded-lg text-white text-sm font-semibold active:scale-95 transition-transform"
+              className="w-full py-3 rounded-lg text-white text-sm font-semibold active:scale-95 transition-transform"
               style={{ background: "linear-gradient(90deg, #ff3b3b, #a80000)" }}
             >
-              Open
+              Open Website
             </button>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Embedded website view — stays inside the app's own screen */}

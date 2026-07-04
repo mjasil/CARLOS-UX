@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Shield, Users, FileText, BarChart3, LogOut, UserPlus } from "lucide-react";
+import { Shield, Users, FileText, BarChart3, LogOut, UserPlus, Link as LinkIcon } from "lucide-react";
 import { supabase } from "./supabaseClient";
 
 export default function AdminPanel({ onClose, onSignOut, standalone }) {
@@ -40,7 +40,7 @@ export default function AdminPanel({ onClose, onSignOut, standalone }) {
   }
 
   async function updateContentValue(key, value) {
-    await supabase.from("app_content").update({ value }).eq("key", key);
+    await supabase.from("app_content").upsert({ key, value }, { onConflict: "key" });
     loadAll();
   }
 
@@ -170,7 +170,22 @@ export default function AdminPanel({ onClose, onSignOut, standalone }) {
 
             {tab === "content" && (
               <div className="space-y-3">
-                {content.map((c) => (
+                <div className="border border-[#ff3b3b]/30 rounded-lg p-3">
+                  <label className="text-[#ff8a8a] text-[10px] uppercase tracking-wide flex items-center gap-1">
+                    <LinkIcon size={11} /> Fixed Website Link
+                  </label>
+                  <input
+                    defaultValue={content.find((c) => c.key === "fixed_link")?.value ?? ""}
+                    onBlur={(e) => updateContentValue("fixed_link", e.target.value.trim())}
+                    placeholder="https://example.com"
+                    className="w-full bg-white/5 border border-white/15 rounded-lg px-3 py-2 text-white text-sm mt-1 outline-none focus:border-[#ff3b3b]/60"
+                  />
+                  <p className="text-white/30 text-[10px] mt-1">
+                    Users tap one button to open this exact link — no typing needed on their end.
+                  </p>
+                </div>
+
+                {content.filter((c) => c.key !== "fixed_link").map((c) => (
                   <div key={c.key}>
                     <label className="text-white/40 text-[10px] uppercase tracking-wide">{c.key}</label>
                     <input

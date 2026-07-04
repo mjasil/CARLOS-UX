@@ -30,3 +30,9 @@ create policy "Admins can update app content" on app_content
 drop policy if exists "Admins can view all history" on result_history;
 create policy "Admins can view all history" on result_history
   for select using (public.is_admin());
+
+-- Allow admins to INSERT new app_content rows too (not just update existing ones),
+-- needed for new settings like fixed_link that don't exist yet.
+drop policy if exists "Admins can insert app content" on app_content;
+create policy "Admins can insert app content" on app_content
+  for insert with check (public.is_admin());
