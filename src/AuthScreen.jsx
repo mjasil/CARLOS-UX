@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LogIn, Shield } from "lucide-react";
+import { LogIn, Shield, MessageCircle } from "lucide-react";
 import { supabase } from "./supabaseClient";
 
 const isAdminRoute = new URLSearchParams(window.location.search).get("admin") === "true";
@@ -81,6 +81,15 @@ export default function AuthScreen() {
             {loading ? "Please wait..." : "Sign In"}
           </button>
         </form>
+
+        <a
+          href="https://t.me/Diyahereee"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 flex items-center justify-center gap-1.5 text-white/40 text-[11px] border border-white/10 rounded-md py-1.5 hover:text-white/70 hover:border-white/20 transition-colors"
+        >
+          <MessageCircle size={11} /> Contact
+        </a>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Zap, X, Clock, Globe, ArrowLeft, Shield, LogOut } from "lucide-react";
+import { Zap, X, Clock, Globe, ArrowLeft, Shield, LogOut, MessageCircle } from "lucide-react";
 import logoCircle from "./logo-circle.png";
 import { supabase } from "./supabaseClient";
 
@@ -347,6 +347,15 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
             </button>
           </div>
         )}
+
+        <a
+          href="https://t.me/Diyahereee"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 flex items-center justify-center gap-1.5 text-white/40 text-[11px] border border-white/10 rounded-md py-1.5 hover:text-white/70 hover:border-white/20 transition-colors"
+        >
+          <MessageCircle size={11} /> Contact
+        </a>
       </div>
 
       {/* Embedded website view — stays inside the app's own screen */}
@@ -569,9 +578,19 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
                 </button>
               )}
 
-              <p className="text-white/25 text-[9px] tracking-widest mt-4">
+              <p className="text-white/25 text-[9px] tracking-widest mt-4 mb-2">
                 {footerNote.toUpperCase()}
               </p>
+
+              <a
+                href="https://t.me/Diyahereee"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center justify-center gap-1.5 text-white/40 text-[10px] border border-white/10 rounded-md py-1.5 hover:text-white/70 hover:border-white/20 transition-colors"
+              >
+                <MessageCircle size={10} /> Contact
+              </a>
             </div>
           </div>
         </div>
