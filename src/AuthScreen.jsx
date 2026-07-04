@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { LogIn } from "lucide-react";
+import { LogIn, Shield } from "lucide-react";
 import { supabase } from "./supabaseClient";
+
+const isAdminRoute = new URLSearchParams(window.location.search).get("admin") === "true";
 
 export default function AuthScreen() {
   const [username, setUsername] = useState("");
@@ -37,10 +39,17 @@ export default function AuthScreen() {
           border: "2px solid #ff3b3b",
         }}
       >
+        {isAdminRoute && (
+          <div className="flex items-center justify-center gap-1.5 mb-3 text-[#ff3b3b] text-[10px] tracking-widest uppercase font-bold">
+            <Shield size={12} /> Admin Console
+          </div>
+        )}
         <h1 className="text-white text-xl font-bold text-center mb-1">Sign In</h1>
         <p className="text-white/40 text-xs text-center mb-6">Carlos UX</p>
         <p className="text-white/30 text-[11px] text-center mb-5">
-          Accounts are created by an admin. Don't have one? Ask your admin.
+          {isAdminRoute
+            ? "Sign in with an admin account to continue."
+            : "Accounts are created by an admin. Don't have one? Ask your admin."}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
