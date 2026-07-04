@@ -145,17 +145,25 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
   const [burstKey, setBurstKey] = useState(0);
   const [viewingUrl, setViewingUrl] = useState(null);
   const [fixedLink, setFixedLink] = useState(null);
+  const [appTitle, setAppTitle] = useState("Carlos");
+  const [tagline, setTagline] = useState("Opens a random small/big generator — one per minute");
+  const [footerNote, setFooterNote] = useState("Random generator · for fun only");
   const cycleIndexRef = useRef(-1);
   const { playClick, playRoll, playReveal, playClose, playLogo } = useSounds();
 
-  // Fetch the admin-set fixed website link
+  // Fetch admin-editable content — fixed link, title, tagline, footer note
   useEffect(() => {
     supabase
       .from("app_content")
-      .select("value")
-      .eq("key", "fixed_link")
-      .maybeSingle()
-      .then(({ data }) => setFixedLink(data?.value || null));
+      .select("key, value")
+      .then(({ data }) => {
+        if (!data) return;
+        const map = Object.fromEntries(data.map((row) => [row.key, row.value]));
+        if (map.fixed_link) setFixedLink(map.fixed_link);
+        if (map.app_title) setAppTitle(map.app_title);
+        if (map.tagline) setTagline(map.tagline);
+        if (map.footer_note) setFooterNote(map.footer_note);
+      });
   }, []);
 
   // Locked to the real wall clock: the cycle boundary is always the top of
@@ -285,7 +293,7 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
         <div className="text-center mb-10">
           <p className="text-[#ff3b3b] text-xs tracking-[0.35em] uppercase mb-2">System Ready</p>
           <h1 className="text-white text-2xl font-semibold">Tap Start</h1>
-          <p className="text-white/40 text-sm mt-2">Opens a random small/big generator — one per minute</p>
+          <p className="text-white/40 text-sm mt-2">{tagline}</p>
         </div>
 
         <button
@@ -418,7 +426,7 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
                   textShadow: "0 0 20px rgba(255,59,59,0.4)",
                 }}
               >
-                Carlos
+                {appTitle}
               </h3>
 
               <p className="text-[#ff8a8a] text-[10px] tracking-[0.25em] uppercase mb-1">Small / Big Generator</p>
@@ -511,7 +519,7 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
               )}
 
               <p className="text-white/25 text-[9px] tracking-widest mt-4">
-                RANDOM GENERATOR · FOR FUN ONLY
+                {footerNote.toUpperCase()}
               </p>
             </div>
           </div>
