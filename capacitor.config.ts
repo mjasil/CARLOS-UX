@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.byflovex.carlosux',
-  appName: 'Carlos UX',
+  appName: 'Dhani Win',
   webDir: 'dist',
   server: {
     url: 'https://mjasil.github.io/CARLOS-UX/',
