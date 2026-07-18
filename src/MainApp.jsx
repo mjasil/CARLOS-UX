@@ -405,13 +405,13 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
           onTouchEnd={handleDragEnd}
         >
           <div
-            className="relative w-[230px] rounded-xl overflow-hidden"
+            className="relative w-[200px] aspect-square rounded-xl overflow-y-auto overflow-x-hidden"
             style={{
               background: "radial-gradient(circle at 50% 20%, #1a0505, #0a0202 75%)",
               border: "2px solid #ff3b3b",
               boxShadow: "0 10px 40px rgba(0,0,0,0.7)",
               animation: "popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards, boxPulse 2.2s ease-in-out infinite",
-              padding: "0 14px 16px",
+              padding: "0 10px 10px",
               pointerEvents: "auto", // the card itself still receives touches
             }}
           >
@@ -419,10 +419,10 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
             <div
               onPointerDown={onHeaderPointerDown}
               onTouchStart={(e) => onHeaderPointerDown(e)}
-              className="flex items-center justify-center py-1.5 cursor-move touch-none"
-              style={{ marginLeft: -14, marginRight: -14, marginBottom: 4 }}
+              className="flex items-center justify-center py-1 cursor-move touch-none"
+              style={{ marginLeft: -10, marginRight: -10, marginBottom: 2 }}
             >
-              <div className="w-8 h-1 rounded-full bg-[#ff3b3b]/40" />
+              <div className="w-6 h-1 rounded-full bg-[#ff3b3b]/40" />
             </div>
 
             {/* corner brackets */}
@@ -434,7 +434,7 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
             ].map((pos, i) => (
               <div
                 key={i}
-                className="absolute w-3.5 h-3.5 border-[#ff3b3b]"
+                className="absolute w-2.5 h-2.5 border-[#ff3b3b]"
                 style={{ ...pos, borderStyle: "solid", borderWidth: pos.borderWidth, animation: "cornerPulse 2s ease-in-out infinite" }}
               />
             ))}
@@ -450,17 +450,17 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
             </button>
 
             <div className="text-center relative">
-              <div className="relative w-11 h-11 mx-auto mb-2" style={{ animation: "logoFloat 3s ease-in-out infinite" }}>
+              <div className="relative w-8 h-8 mx-auto mb-1" style={{ animation: "logoFloat 3s ease-in-out infinite" }}>
                 {/* rotating dashed ring */}
                 <div
-                  className="absolute -inset-1 rounded-full"
+                  className="absolute -inset-0.5 rounded-full"
                   style={{
                     border: "1px dashed rgba(255,59,59,0.6)",
                     animation: "logoSpin 6s linear infinite",
                   }}
                 />
                 <div
-                  className="w-9 h-9 rounded-full overflow-hidden mx-auto relative"
+                  className="w-7 h-7 rounded-full overflow-hidden mx-auto relative"
                   style={{
                     border: "2px solid #ff3b3b",
                     animation: "logoGlow 2s ease-in-out infinite, logoIn 0.6s cubic-bezier(0.34,1.56,0.64,1)",
@@ -475,7 +475,7 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
               </div>
 
               <h3
-                className="text-base font-black tracking-[0.1em] mb-0.5 uppercase"
+                className="text-[11px] font-black tracking-[0.08em] mb-0 uppercase"
                 style={{
                   background: "linear-gradient(90deg, #ff3b3b, #ffd65d, #ff3b3b)",
                   backgroundSize: "200% auto",
@@ -489,16 +489,16 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
                 {appTitle}
               </h3>
 
-              <p className="text-[#ff8a8a] text-[8px] tracking-[0.2em] uppercase mb-1">Small / Big Generator</p>
-              <h2 className="text-white text-sm font-bold mb-2.5">
+              <p className="text-[#ff8a8a] text-[6px] tracking-[0.15em] uppercase mb-0.5">Small / Big Generator</p>
+              <h2 className="text-white text-xs font-bold mb-1.5">
                 <GlitchText>[ {rolling ? "ROLLING" : result ? result.toUpperCase() : "READY"} ]</GlitchText>
               </h2>
 
-              <div className="relative mb-2.5">
+              <div className="relative mb-1.5">
                 {result && <Sparkles burstKey={burstKey} />}
                 <div
                   key={rolling ? "rolling" : `still-${result}`}
-                  className="w-full h-14 rounded-md flex items-center justify-center text-sm font-bold select-none relative"
+                  className="w-full h-9 rounded-md flex items-center justify-center text-xs font-bold select-none relative"
                   style={{
                     background: result === "small"
                       ? "linear-gradient(135deg, #5da9ff, #0a3a7a)"
@@ -516,11 +516,11 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
 
               {/* history — last few results, newest first */}
               {history.length > 0 && (
-                <div className="flex items-center justify-center gap-1 mb-2.5">
+                <div className="flex items-center justify-center gap-1 mb-1.5">
                   {history.map((h, i) => (
                     <span
                       key={i}
-                      className="w-1.5 h-1.5 rounded-full"
+                      className="w-1 h-1 rounded-full"
                       style={{
                         backgroundColor: h === "small" ? "#5da9ff" : "#ffb85c",
                         opacity: 1 - i * 0.1,
@@ -531,15 +531,15 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
               )}
 
               {/* real-time countdown timer — always live, continuous 60s cycle */}
-              <div className="mb-2.5">
-                <div className="flex items-center justify-between text-[8px] text-[#ff8a8a] tracking-widest mb-1">
-                  <span className="flex items-center gap-1">
-                    <span className="relative flex h-1.5 w-1.5">
+              <div className="mb-1.5">
+                <div className="flex items-center justify-between text-[6px] text-[#ff8a8a] tracking-widest mb-0.5">
+                  <span className="flex items-center gap-0.5">
+                    <span className="relative flex h-1 w-1">
                       <span className="absolute inline-flex h-full w-full rounded-full bg-[#ff3b3b]" style={{ animation: "livePulse 1.4s ease-in-out infinite" }} />
                     </span>
-                    <Clock size={9} /> CYCLE
+                    <Clock size={7} /> CYCLE
                   </span>
-                  <span className="text-white font-bold text-xs tabular-nums">{mm}:{ss}</span>
+                  <span className="text-white font-bold text-[10px] tabular-nums">{mm}:{ss}</span>
                 </div>
                 <div className="w-full h-1 rounded-full bg-[#ff3b3b]/15 overflow-hidden">
                   <div
@@ -554,15 +554,15 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
               </div>
 
               {waitFlash ? (
-                <div className="w-full flex items-center justify-center gap-1.5 text-[#ff8a8a] text-[10px] tracking-widest border border-[#ff3b3b]/50 rounded-md py-2" style={{ animation: "flicker 0.5s infinite" }}>
-                  <Clock size={11} />
+                <div className="w-full flex items-center justify-center gap-1 text-[#ff8a8a] text-[8px] tracking-widest border border-[#ff3b3b]/50 rounded-md py-1.5" style={{ animation: "flicker 0.5s infinite" }}>
+                  <Clock size={9} />
                   WAIT
                 </div>
               ) : (
                 <button
                   onClick={generate}
                   disabled={rolling}
-                  className="relative w-full overflow-hidden text-white font-bold text-[10px] tracking-widest py-2 rounded-md transition-transform active:scale-95 disabled:opacity-30 flex items-center justify-center gap-1.5"
+                  className="relative w-full overflow-hidden text-white font-bold text-[8px] tracking-widest py-1.5 rounded-md transition-transform active:scale-95 disabled:opacity-30 flex items-center justify-center gap-1"
                   style={{ background: "linear-gradient(90deg, #ff3b3b, #a80000)" }}
                 >
                   <span
@@ -573,12 +573,12 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
                       animation: "shine 2.6s ease-in-out infinite",
                     }}
                   />
-                  <Zap size={11} />
+                  <Zap size={9} />
                   {rolling ? "ROLLING..." : "START"}
                 </button>
               )}
 
-              <p className="text-white/25 text-[7px] tracking-widest mt-2.5 mb-1.5">
+              <p className="text-white/25 text-[6px] tracking-widest mt-1.5 mb-1">
                 {footerNote.toUpperCase()}
               </p>
 
@@ -587,9 +587,9 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center justify-center gap-1 text-white/40 text-[9px] border border-white/10 rounded-md py-1 hover:text-white/70 hover:border-white/20 transition-colors"
+                className="flex items-center justify-center gap-1 text-white/40 text-[7px] border border-white/10 rounded-md py-0.5 hover:text-white/70 hover:border-white/20 transition-colors"
               >
-                <MessageCircle size={9} /> Contact
+                <MessageCircle size={7} /> Contact
               </a>
             </div>
           </div>
