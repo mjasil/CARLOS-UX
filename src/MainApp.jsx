@@ -183,7 +183,8 @@ export default function MainApp({ profile, onLogout, onOpenAdmin }) {
       } else if (cycleIndex !== cycleIndexRef.current) {
         cycleIndexRef.current = cycleIndex;
         setUsedThisCycle(false);
-        setResult(null);
+        // Note: result is intentionally NOT cleared here — the last
+        // prediction stays visible until the user taps Start again.
       }
     };
     tick();
